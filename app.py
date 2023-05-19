@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
 from dotenv import load_dotenv
+
 from ai import create_completion
 from grab import get_url_text
 
