@@ -14,5 +14,5 @@ pip install -r requirements.txt
 
 ## Run
 ```bash
-flask run
+flask --app app.py --debug run
 ```
