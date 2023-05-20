@@ -26,7 +26,9 @@ def completion():
     prompt = pre_prompt + url_text
     completion = create_completion(prompt)
     completion_text = completion['choices'][0]['text']
-    twitter.create_tweet(completion_text)
+    result = twitter.create_tweet(completion_text)
+    print(result)
+    tweet_url = "https://twitter.com/KaraGalloway_/status/" + result['id']
     return redirect(url_for('index', completion=completion_text))
 
 
