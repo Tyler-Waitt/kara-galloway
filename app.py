@@ -1,9 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, request
 from dotenv import load_dotenv
 
-from ai import create_completion
-from grab import get_url_text
+import ai
+import grab
 import twitter
+import persist
 
 load_dotenv()
 
@@ -12,24 +13,25 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    completion = request.args.get('completion')
-    return render_template('index.html', completion=completion)
+    data = persist.load_data()
+    return render_template('index.html', data=data)
 
 
 @app.route('/completion', methods=['POST'])
 def completion():
     url = request.form['url']
-    url_text = get_url_text(url)
+    url_text = grab.get_url_text(url)
     pre_prompt = """The following is the text from the HTML of an internet 
-    article, can you please summarize it in the style of a funny tweet from
-    Kara Swisher? """
+    article, can you please write a funny tweet it in the style of Kara 
+    Swisher about it? Don't reference yourself."""
     prompt = pre_prompt + url_text
-    completion = create_completion(prompt)
+    completion = ai.create_completion(prompt)
     completion_text = completion['choices'][0]['text']
-    result = twitter.create_tweet(completion_text)
-    print(result)
-    tweet_url = "https://twitter.com/KaraGalloway_/status/" + result['id']
-    return redirect(url_for('index', completion=completion_text))
+    tweet_text = completion_text + "\n" + url
+    repsonse = twitter.create_tweet(tweet_text)
+    tweet_id = repsonse.data['id']
+    persist.save_data(tweet_id, url, prompt, completion_text)
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

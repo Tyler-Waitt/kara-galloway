@@ -3,13 +3,31 @@
 {% block title %} Hello {% endblock %}
 
 {% block content %}
-    <h1 class="mt-4 mb-2 text-4xl font-medium leading-tight text-primary"><a href="/">Kara Galloway</a></h1>
+    <div class="flex justify-between items-center">
+        <h1 class="mt-4 mb-2 text-4xl font-medium leading-tight text-primary"><a href="/">Kara Galloway</a></h1>
+        <a class="text-blue-400" target="_blank" href="https://twitter.com/KaraGalloway_">@KaraGalloway_ on Twitter</a>
+    </div>
+    
     <form method="POST" action="/completion">
         <input class="shadow appearance-none border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="url" placeholder="Enter a URL" />
         <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" name="submit" value="Submit" />
     </form>
     <hr class="mt-4 mb-4">
-    {% if completion %}
-        {{ completion }}
-    {% endif %}
+    {% for tweet in data %}
+        <div class="py-4 px-6 my-4 rounded-xl border w-1/2">
+            <div class="flex space-x-2 mb-2">
+                <div><img class="rounded-full w-12" src="{{ url_for('static', filename='images/avatar.jpg') }}"></div>
+                <div>
+                    <div class="font-bold mb-0">Kara Galloway</div>
+                    <div class="font-light">@KaraGalloway_</div>
+                </div>
+            </div>
+            <div class="font-light text-xl mb-1">{{ tweet.completion }}</div>
+            <div class="mb-2"><a class="text-blue-400 text-lg font-light" href="{{ tweet.url }}">{{ tweet.url[0:60] }}...</a></div>
+            <div class="flex justify-between items-center">
+                <div class="text-gray-400 font-light">{{ tweet.created_at }}</div>
+                <div><a class="text-blue-400 text-md font-semibold" href="https://twitter.com/KaraGalloway_/status/{{ tweet.tweet_id }}">View Tweet</a></div>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}
